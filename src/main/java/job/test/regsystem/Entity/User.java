@@ -1,9 +1,7 @@
 package job.test.regsystem.Entity;
 
 import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "t_users")
@@ -18,11 +16,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private Boolean isClient;
-
-    private Boolean isOperator;
-
-    private Boolean isAdmin;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "t_users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles;
 
     @Column(nullable = false)
     private String firstName;
@@ -30,15 +29,11 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    private List<Bid> bidList = new LinkedList<>();
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Bid> bidList;
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getLogin() {
@@ -57,30 +52,6 @@ public class User {
         this.password = password;
     }
 
-    public Boolean isClient() {
-        return isClient;
-    }
-
-    public void setClient(boolean client) {
-        isClient = client;
-    }
-
-    public Boolean isOperator() {
-        return isOperator;
-    }
-
-    public void setOperator(boolean operator) {
-        isOperator = operator;
-    }
-
-    public Boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -97,25 +68,19 @@ public class User {
         this.lastName = lastName;
     }
 
-//    public List<Bid> getBidList() {
-//        return bidList;
-//    }
+    public List<Bid> getBidList() {
+        return bidList;
+    }
 
     public void setBidList(List<Bid> bidList) {
         this.bidList = bidList;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(login, user.login);
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, login);
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

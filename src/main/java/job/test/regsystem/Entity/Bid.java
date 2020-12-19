@@ -10,19 +10,26 @@ import java.util.Objects;
 @Table(name = "t_bids")
 public class Bid {
 
+    public enum State {
+        DRAFT,
+        SENT,
+        ACCEPTED,
+        REJECTED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User author;
+    @JoinColumn(referencedColumnName = "id")
+    private User user;
 
     @Column(columnDefinition = "TEXT")
     private String message;
 
     @Enumerated(EnumType.STRING)
-    private BidState state;
+    private State state;
 
     @CreationTimestamp
     private LocalDateTime createdTime;
@@ -31,16 +38,12 @@ public class Bid {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public User getUser() {
+        return user;
     }
 
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setUser(User author) {
+        this.user = author;
     }
 
     public String getMessage() {
@@ -51,11 +54,11 @@ public class Bid {
         this.message = message;
     }
 
-    public BidState getState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(BidState state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -65,21 +68,5 @@ public class Bid {
 
     public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Bid bid = (Bid) o;
-        return id == bid.id &&
-                Objects.equals(message, bid.message) &&
-                state == bid.state &&
-                Objects.equals(createdTime, bid.createdTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, message, state, createdTime);
     }
 }

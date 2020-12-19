@@ -1,7 +1,7 @@
 package job.test.regsystem.Controllers;
 
 import job.test.regsystem.Entity.Bid;
-import job.test.regsystem.Entity.BidState;
+import job.test.regsystem.Entity.Role;
 import job.test.regsystem.Services.BidService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,7 +29,7 @@ public class BidController {
     @GetMapping
     public ResponseEntity<List<Bid>> findAll(Authentication authentication, Principal principal) {
         if (authentication.getAuthorities().stream()
-                .anyMatch(g -> g.getAuthority().equals("ROLE_OPERATOR"))) {
+                .anyMatch(g -> g.getAuthority().equals(Role.OPERATOR))) {
             return ResponseEntity.ok(bidService.findAllSent());
         }
         return ResponseEntity.ok(bidService.findAllByLogin(principal.getName()));
@@ -45,9 +45,9 @@ public class BidController {
         Bid bidPatched = bidTemp.get();
 
         if (authentication.getAuthorities().stream()
-                .anyMatch(g -> g.getAuthority().equals("ROLE_OPERATOR"))) {
-            if (bidPatched.getState() == BidState.SENT &&
-                    (bid.getState() == BidState.ACCEPTED || bid.getState() == BidState.REJECTED)) {
+                .anyMatch(g -> g.getAuthority().equals(Role.OPERATOR))) {
+            if (bidPatched.getState() == Bid.State.SENT &&
+                    (bid.getState() == Bid.State.ACCEPTED || bid.getState() == Bid.State.REJECTED)) {
                 bidPatched.setState(bid.getState());
                 return ResponseEntity.ok(bidService.save(bidPatched));
             }
@@ -55,13 +55,13 @@ public class BidController {
         }
 
         if (bid.getMessage() != null)
-            if (bidPatched.getState() == BidState.DRAFT)
+            if (bidPatched.getState() == Bid.State.ACCEPTED)
                 bidPatched.setMessage(bid.getMessage());
             else
                 return ResponseEntity.badRequest().build();
 
-        if (bid.getState() == BidState.SENT)
-            bidPatched.setState(BidState.SENT);
+        if (bid.getState() == Bid.State.SENT)
+            bidPatched.setState(Bid.State.SENT);
 
         return ResponseEntity.ok(bidService.save(bidPatched));
     }

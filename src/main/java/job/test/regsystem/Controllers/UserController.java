@@ -13,8 +13,11 @@ import java.util.Optional;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<List<User>> findAll() {
@@ -27,16 +30,9 @@ public class UserController {
         if (!userTemp.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-
         User userPatched = userTemp.get();
-//        if (user.isAdmin() != null)
-//            userPatched.setAdmin(user.isAdmin());
-        if (user.isOperator() != null)
-            userPatched.setOperator(user.isOperator());
-//        if (user.isClient() != null)
-//            userPatched.setClient(user.isClient());
-
+        userPatched.setRoles(user.getRoles());
         userService.save(userPatched);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,13 +1,13 @@
 package job.test.regsystem.Services;
 
 import job.test.regsystem.Entity.Bid;
-import job.test.regsystem.Entity.BidState;
 import job.test.regsystem.Repositories.BidRepository;
 import job.test.regsystem.Repositories.BidRepositoryCriteria;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class BidService  {
@@ -26,14 +26,15 @@ public class BidService  {
 
     public List<Bid> findAll() { return bidRepository.findAll(); }
 
-    public List<Bid> findAllByLogin(String login) { return bidRepository.findAllByAuthor_Login(login); }
+    public List<Bid> findAllByLogin(String login) { return bidRepository.findAllByUser_Login(login); }
 
     public Optional<Bid> findById(Long id) {
         return bidRepository.findById(id);
     }
 
     public List<Bid> findAllSent() {
-        List<Bid> temp = bidRepositoryCriteria.findAllByState(BidState.SENT);
+        List<Bid> temp = bidRepositoryCriteria.findAllByState(Bid.State.SENT);
+
         for (Bid b : temp) {
             b.setMessage(String.join("-", b.getMessage().split("")));
         }

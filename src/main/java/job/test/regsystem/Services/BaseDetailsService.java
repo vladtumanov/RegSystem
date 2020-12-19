@@ -31,14 +31,7 @@ public class BaseDetailsService implements UserDetailsService {
 
         User userTemp = user.get();
         List<SimpleGrantedAuthority> authorities = new LinkedList<>();
-
-        if (userTemp.isAdmin())
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        if (userTemp.isOperator())
-            authorities.add(new SimpleGrantedAuthority("ROLE_OPERATOR"));
-        if (userTemp.isClient())
-            authorities.add(new SimpleGrantedAuthority("ROLE_CLIENT"));
-
+        userTemp.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new org.springframework.security.core.userdetails.
                 User(userTemp.getLogin(), userTemp.getPassword(), authorities);
     }

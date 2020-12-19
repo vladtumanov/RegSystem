@@ -1,7 +1,6 @@
 package job.test.regsystem.Repositories;
 
 import job.test.regsystem.Entity.Bid;
-import job.test.regsystem.Entity.BidState;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -23,12 +22,12 @@ public class BidRepositoryCriteria {
 
         Root<Bid> root = query.from(Bid.class);
 
-        query.where(builder.equal(root.get("author").get("login"), login));
+        query.where(builder.equal(root.get("user").get("login"), login));
 
         return entityManager.createQuery(query).getResultList();
     }
 
-    public List<Bid> findAllByState(BidState state) {
+    public List<Bid> findAllByState(Bid.State state) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Bid> query = builder.createQuery(Bid.class);
 
